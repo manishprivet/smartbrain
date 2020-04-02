@@ -1,5 +1,6 @@
 {
   "name": "smartbrain",
+  "homepage": "https://manishprivet.github.io/smartbrain",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
