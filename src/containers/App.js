@@ -18,26 +18,27 @@ class App extends React.Component {
     this.state = {
       input: '',
       imageUrl: '',
-      box: {}
+      boxes: []
     }
   }
 
   calculateFaceLocation = (data) => {
-    const face = data.outputs[0].data.regions[0].region_info.bounding_box;
+    const faces = data.outputs[0].data.regions;
     const image = document.getElementById('imageCheck');
     const height = Number(image.height);
     const width = Number(image.width);
-    return {
-      leftCol: face.left_col * width,
-      topRow: face.top_row * height,
-      rightCol: width - (face.right_col * width),
-      bottomRow: height - (face.bottom_row * height)
-    }
+    return faces.map(face => {
+      return {
+        leftCol: face.region_info.bounding_box.left_col * width,
+        topRow: face.region_info.bounding_box.top_row * height,
+        rightCol: width - (face.region_info.bounding_box.right_col * width),
+        bottomRow: height - (face.region_info.bounding_box.bottom_row * height)
+      }
+    })
   }
 
-  displayFaceBox = (box) =>{ 
-    this.setState({box : box});
-    console.log('Box State', this.state.box);
+  displayFaceBox = (boxes) =>{ 
+    this.setState({boxes : boxes});
   }
 
   onInputChange = (event) => this.setState({input: event.target.value});
@@ -57,7 +58,7 @@ class App extends React.Component {
         <Navigation />
         <Rank />
         <ImageLinkForm onInputChange={this.onInputChange} onButtonClick = {this.onButtonClick} />
-        <ImageView imageUrl = {this.state.imageUrl} box = {this.state.box} />
+        <ImageView imageUrl = {this.state.imageUrl} boxes = {this.state.boxes} />
       </div>
     );
   }
