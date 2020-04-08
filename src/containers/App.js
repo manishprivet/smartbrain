@@ -7,6 +7,8 @@ import ImageView from '../components/ImageView/ImageView';
 import Rank from '../components/Rank/Rank'
 import Particles from 'react-particles-js';
 import {circleParticles} from './Particles';
+import SignIn from '../components/SignIn/SignIn';
+import Register from '../components/Register/Register';
 
 const app = new Clarifai.App({
   apiKey: '7781ae722ba94ab0ad88394bf245e4f2'
@@ -18,8 +20,16 @@ class App extends React.Component {
     this.state = {
       input: '',
       imageUrl: '',
-      boxes: []
+      boxes: [],
+      route: 'signin',
+      isSignedIn: false
     }
+  }
+
+  componentDidMount() {
+    fetch('http://localhost:3001/')
+      .then(res => res.json())
+      .then(console.log)
   }
 
   calculateFaceLocation = (data) => {
@@ -50,15 +60,28 @@ class App extends React.Component {
       .catch(err => console.log(err));
   }
 
+  onRouteChange = (route) => {
+    route === 'home' ? this.setState({route: route, isSignedIn: true}) : this.setState({route: route, isSignedIn: false})
+  }
+
+
 
   render() {
       return (
       <div className="App">
         <Particles className='particles' params={circleParticles} />
-        <Navigation />
-        <Rank />
-        <ImageLinkForm onInputChange={this.onInputChange} onButtonClick = {this.onButtonClick} />
-        <ImageView imageUrl = {this.state.imageUrl} boxes = {this.state.boxes} />
+        <Navigation onRouteChange = {this.onRouteChange} isSignedIn = {this.state.isSignedIn}/>
+        {
+          (this.state.route === 'home') ?
+          <div>
+              <Rank />
+              <ImageLinkForm onInputChange={this.onInputChange} onButtonClick = {this.onButtonClick} />
+              <ImageView imageUrl = {this.state.imageUrl} boxes = {this.state.boxes} />
+            </div> : (this.state.route === 'signin') ?
+                      <SignIn onRouteChange ={this.onRouteChange} /> :
+                      <Register onRouteChange = {this.onRouteChange} />
+            
+        }
       </div>
     );
   }
